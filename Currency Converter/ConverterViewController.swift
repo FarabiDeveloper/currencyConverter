@@ -8,6 +8,7 @@
 
 import UIKit
 import Moya
+import Reachability
 
 class ConverterViewController: UIViewController {
     
@@ -21,6 +22,7 @@ class ConverterViewController: UIViewController {
     var secondTFValue: Double?
     var firstKey: Double?
     var secondKey: Double?
+    let reachability = Reachability()!
     
     var rates = [Rate]()
     var convert = Convert() {
@@ -44,13 +46,19 @@ class ConverterViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.getRequest()
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("ReachableKey"), object: nil, queue: OperationQueue.main) { notification in
+            // send your request again here
+            self.getRequest()
+        }
+        
         self.firstCurrencyKeyTF.delegate = self
         self.secondCurrencyKeyTF.delegate = self
         self.firstCurrencyValueTF.delegate = self
         self.secondCurrencyValueTF.delegate = self
         self.createCurrencyPicker()
         self.createToolbar()
-        self.getRequest()
         
         self.firstCurrencyValueTF.addTarget(self, action: #selector(firstValTFDidChange(_:)), for: .editingChanged)
         self.secondCurrencyValueTF.addTarget(self, action: #selector(secondValTFDidChange(_:)), for: .editingChanged)
